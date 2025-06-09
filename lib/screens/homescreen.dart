@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert'; // For JSON encoding/decoding
+import 'dart:convert';
 
 import '../models/folder.dart';
 import '../widgets/folder_thumbnail.dart';
@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<TravelFolder> _folders = [];
   final String _foldersKey = 'travel_folders';
-  Map<String, int> _planCounts = {}; // Add this line
+  Map<String, int> _planCounts = {};
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _folders = jsonList.map((json) => TravelFolder.fromJson(json)).toList();
       });
-      await _loadPlanCounts(); // Add this line
+      await _loadPlanCounts(); 
     }
   }
 
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _folders.map((f) => f.toJson()).toList(),
     );
     await prefs.setString(_foldersKey, foldersString);
-    await _loadPlanCounts(); // Add this line to refresh counts after changes
+    await _loadPlanCounts();
   }
 
   void _addFolder() {
@@ -232,11 +232,11 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: _folders.length,
               itemBuilder: (context, index) {
                 final folder = _folders[index];
-                final planCount = _planCounts[folder.id] ?? 0; // Add this line
+                final planCount = _planCounts[folder.id] ?? 0; 
                 return Card(
                   child: FolderThumbnailCard(
                     folder: folder,
-                    planCount: planCount, // Pass the count here
+                    planCount: planCount,
                     onTap: () async {
                       await Navigator.push(
                         context,
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               PlannerDetailScreen(countryName: folder.name),
                         ),
                       );
-                      await _loadPlanCounts(); // Refresh counts after returning
+                      await _loadPlanCounts();
                     },
                     onLongPress: () {
                       showModalBottomSheet(
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onTap: () {
                                     Navigator.pop(
                                       context,
-                                    ); // Close bottom sheet
+                                    );
                                     _editFolder(index);
                                   },
                                 ),
@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onTap: () {
                                     Navigator.pop(
                                       context,
-                                    ); // Close bottom sheet
+                                    );
                                     _deleteFolder(index);
                                   },
                                 ),

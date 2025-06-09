@@ -71,7 +71,6 @@ class _AuthScreenState extends State<AuthScreen> {
             backgroundColor: kPrimary,
           ),
         );
-        // Replace with your home/navigation screen
         Navigator.pushReplacementNamed(context, '/home');
       }
     } on FirebaseAuthException catch (e) {
@@ -134,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: kPrimary, width: 2),
                     ),
-                    fillColor: kAccent.withOpacity(0.1),
+                    fillColor: kAccent.withValues(alpha: 0.1),
                     filled: true,
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -156,7 +155,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: kPrimary, width: 2),
                     ),
-                    fillColor: kAccent.withOpacity(0.1),
+                    fillColor: kAccent.withValues(alpha: 0.1),
                     filled: true,
                   ),
                   obscureText: true,
@@ -182,12 +181,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimary, // Button background color
-                      foregroundColor: kBackground, // Text and icon color
+                      backgroundColor: kPrimary, 
+                      foregroundColor: kBackground, 
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       textStyle: const TextStyle(fontSize: 18),
                     ),
-                    icon: Icon(Icons.login, color: Colors.white), // Set icon color here
+                    icon: Icon(Icons.login, color: Colors.white), 
                     label: Text(
                       _isLogin ? 'Login' : 'Register',
                       style: const TextStyle(fontSize: 18),

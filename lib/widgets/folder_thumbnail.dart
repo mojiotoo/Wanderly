@@ -10,14 +10,14 @@ class FolderThumbnailCard extends StatelessWidget {
   final TravelFolder folder;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
-  final int planCount; // Add this line
+  final int planCount; 
 
   const FolderThumbnailCard({
     super.key,
     required this.folder,
     required this.onTap,
     this.onLongPress,
-    this.planCount = 0, // Add this line
+    this.planCount = 0,
   });
 
   @override

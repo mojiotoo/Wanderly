@@ -95,7 +95,6 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
           : ListView.separated(
               itemCount: _items.length + 1,
               separatorBuilder: (context, idx) {
-                // Only add divider between items, not after the last item or before the total
                 if (idx < _items.length - 1) {
                   return const Divider(height: 1, thickness: 1);
                 }
@@ -124,7 +123,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                     ListTile(
                       tileColor: kBackground,
                       title: Padding(
-                        padding: const EdgeInsets.only(right: 40.0), // reduce space for icons
+                        padding: const EdgeInsets.only(right: 40.0),
                         child: Text(item.place),
                       ),
                       subtitle: Padding(
@@ -148,14 +147,14 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                             onPressed: () => _addOrEditItem(item: item, index: idx),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            visualDensity: VisualDensity.compact, // Remove extra padding
+                            visualDensity: VisualDensity.compact, 
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.grey, size: 18),
                             onPressed: () => _deleteItem(idx),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            visualDensity: VisualDensity.compact, // Remove extra padding
+                            visualDensity: VisualDensity.compact,
                           ),
                         ],
                       ),
