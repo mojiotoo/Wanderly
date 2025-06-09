@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import '../screens/homescreen.dart'; // Make sure this path is correct
-import '../services/auth.dart'; // Make sure this path is correct
+import 'package:firebase_auth/firebase_auth.dart';
+
+const Color kBackground = Color(0xFFFFFDF6);
+const Color kPrimary = Color(0xFF2978A0);
+const Color kAccent = Color(0xFFBBDEF0);
+const Color kHighlight = Color(0xFFF3DFA2);
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -10,15 +16,91 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final AuthServices _authServices = AuthServices();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(); // For form validation
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isLogin = true;
   bool _isLoading = false;
-  String? _errorMessage; // To store error messages
+  String? _errorMessage;
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fix the errors in the form.')),
+        );
+      }
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      if (_isLogin) {
+        await _firebase
+            .signInWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim(),
+            )
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw FirebaseAuthException(
+              code: 'timeout', message: 'Request timed out. Please try again.');
+        });
+      } else {
+        await _firebase
+            .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim(),
+            )
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw FirebaseAuthException(
+              code: 'timeout', message: 'Request timed out. Please try again.');
+        });
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_isLogin
+                ? 'Login successful!'
+                : 'Registration successful!'),
+            backgroundColor: kPrimary,
+          ),
+        );
+        // Replace with your home/navigation screen
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
+        });
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${_isLogin ? 'Login' : 'Signup'} failed: ${e.message}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'An unexpected error occurred. Please try again.';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('An unexpected error occurred. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -27,67 +109,17 @@ class _AuthScreenState extends State<AuthScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
-      return; // If form is not valid, do not proceed
-    }
-
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null; // Clear previous errors
-    });
-
-    String? error;
-    if (_isLogin) {
-      error = await _authServices.login(
-        _emailController.text,
-        _passwordController.text,
-      );
-    } else {
-      error = await _authServices.register(
-        _emailController.text,
-        _passwordController.text,
-      );
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (error == null) {
-      // Authentication successful
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isLogin ? 'Login successful!' : 'Registration successful!',
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
-      // Navigate to home screen only on success
-      Navigator.pushReplacement(
-        // Use pushReplacement to prevent going back to AuthScreen
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } else {
-      // Authentication failed
-      setState(() {
-        _errorMessage = error;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isLogin ? 'Login' : 'Register')),
+      backgroundColor: kBackground,
+      appBar: AppBar(
+        title: Text(_isLogin ? 'Login' : 'Register'),
+        backgroundColor: kPrimary,
+        foregroundColor: kBackground,
+      ),
       body: Center(
         child: SingleChildScrollView(
-          // Prevents overflow if keyboard is up
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
@@ -96,14 +128,19 @@ class _AuthScreenState extends State<AuthScreen> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: kPrimary, width: 2),
+                    ),
+                    fillColor: kAccent.withOpacity(0.1),
+                    filled: true,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null ||
-                        value.isEmpty ||
+                        value.trim().isEmpty ||
                         !value.contains('@')) {
                       return 'Please enter a valid email address.';
                     }
@@ -113,19 +150,24 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: kPrimary, width: 2),
+                    ),
+                    fillColor: kAccent.withOpacity(0.1),
+                    filled: true,
                   ),
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 6) {
+                    if (value == null || value.trim().length < 6) {
                       return 'Password must be at least 6 characters long.';
                     }
                     return null;
                   },
                 ),
-                if (_errorMessage != null) // Display error message if present
+                if (_errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
@@ -136,21 +178,20 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 const SizedBox(height: 20),
                 SizedBox(
-                  width: double.infinity, // Make button full width
-                  child: ElevatedButton(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: kPrimary, // Button background color
+                      foregroundColor: kBackground, // Text and icon color
                       padding: const EdgeInsets.symmetric(vertical: 15),
+                      textStyle: const TextStyle(fontSize: 18),
                     ),
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : Text(
-                              _isLogin ? 'Login' : 'Register',
-                              style: const TextStyle(fontSize: 18),
-                            ),
+                    icon: Icon(Icons.login, color: Colors.white), // Set icon color here
+                    label: Text(
+                      _isLogin ? 'Login' : 'Register',
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -158,12 +199,15 @@ class _AuthScreenState extends State<AuthScreen> {
                   onPressed: () {
                     setState(() {
                       _isLogin = !_isLogin;
-                      _errorMessage = null; // Clear error when switching mode
-                      _formKey.currentState?.reset(); // Clear validation states
+                      _errorMessage = null;
+                      _formKey.currentState?.reset();
                       _emailController.clear();
                       _passwordController.clear();
                     });
                   },
+                  style: TextButton.styleFrom(
+                    foregroundColor: kPrimary,
+                  ),
                   child: Text(
                     _isLogin
                         ? 'Don\'t have an account? Register'

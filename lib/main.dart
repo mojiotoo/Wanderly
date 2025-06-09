@@ -7,7 +7,7 @@ import 'screens/auth.dart';
 import 'screens/homescreen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // <--- ADD THIS LINE
+  WidgetsFlutterBinding.ensureInitialized(); 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
@@ -23,20 +23,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // Use a StreamBuilder to listen to authentication state changes
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
-            ); // Show loading
+            );
           }
           if (snapshot.hasData) {
-            // User is logged in
+            
             return const HomeScreen();
           } else {
-            // User is not logged in
             return const AuthScreen();
           }
         },

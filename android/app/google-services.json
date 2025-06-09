@@ -1,21 +1,40 @@
 {
   "project_info": {
-    "project_number": "950402078287",
-    "project_id": "wanderlybaconpanggang",
-    "storage_bucket": "wanderlybaconpanggang.firebasestorage.app"
+    "project_number": "47971145185",
+    "project_id": "wanderly-14d51",
+    "storage_bucket": "wanderly-14d51.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:950402078287:android:bb9c05a46f1c16360b7c3a",
+        "mobilesdk_app_id": "1:47971145185:android:30971b7dd5d4202c73eea0",
         "android_client_info": {
-          "package_name": "wanderly.app"
+          "package_name": "com.example.wanderly"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCWrZdsaT6e08zzjDkqmTs45ceCkuwgXwg"
+          "current_key": "AIzaSyBMnJvAnIoNVLKR4rWSbxqytD1QHyc8f9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47971145185:android:c3d9e1e899e2327973eea0",
+        "android_client_info": {
+          "package_name": "com.wanderly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMnJvAnIoNVLKR4rWSbxqytD1QHyc8f9o"
         }
       ],
       "services": {
