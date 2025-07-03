@@ -1,4 +1,4 @@
-# Aplikasi Travel - Wanderly 
+# Wanderly - Aplikasi Travel 
 oleh tim Bacon Panggang
 
 Link G-docs proposal: https://docs.google.com/document/d/1XKbQ6DYEWf2gz77etG53o9-WtqamLZS-5qDNZ0Dcx-0/edit?usp=sharing
